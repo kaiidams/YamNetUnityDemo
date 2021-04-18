@@ -9,26 +9,27 @@ namespace YamNetCSharpDemo
 {
     class AudioFeatureBuffer
     {
-        private Mfcc _mfcc;
-        private int _outputCount;
-        private float[] _outputBuffer;
-        private int _stftHopLength = 160;
-        private int _stftWindowLength = 400;
-        private int _nMelBands = 64;
-        private float[] _waveformBuffer;
-        private int _waveformCount;
-        private int _patchWindowLength;
-        private int _patchHopLength;
+        private readonly Mfcc _mfcc;
+        private readonly int _stftHopLength;
+        private readonly int _stftWindowLength;
+        private readonly int _nMelBands;
 
-        public AudioFeatureBuffer(int stftHopLength = 160, int patchWindowLength = 15360, int patchHopLength = 48)
+        private readonly float[] _waveformBuffer;
+        private int _waveformCount;
+        private readonly float[] _outputBuffer;
+        private int _outputCount;
+
+        public AudioFeatureBuffer(int stftHopLength = 160, int stftWindowLength = 400, int nMelBands = 64)
         {
             _mfcc = new Mfcc();
-            _outputCount = 0;
-            _waveformBuffer = new float[2 * _stftHopLength + _stftWindowLength];
-            _outputBuffer = new float[_nMelBands * (_stftWindowLength + _stftHopLength)];
             _stftHopLength = stftHopLength;
-            _patchWindowLength = patchWindowLength;
-            _patchHopLength = patchHopLength;
+            _stftWindowLength = stftWindowLength;
+            _nMelBands = nMelBands;
+
+            _waveformBuffer = new float[2 * _stftHopLength + _stftWindowLength];
+            _waveformCount = 0;
+            _outputBuffer = new float[_nMelBands * (_stftWindowLength + _stftHopLength)];
+            _outputCount = 0;
         }
 
         public int OutputCount { get { return _outputCount; } }
@@ -37,15 +38,10 @@ namespace YamNetCSharpDemo
         public int Write(float[] waveform, int offset, int count)
         {
             int written = 0;
-            if (OutputCount >= _patchWindowLength)
-            {
-                // Consume output buffer before writing more waveform.
-                return written;
-            }
 
             if (_waveformCount > 0)
             {
-                int needed = ((_waveformCount + _stftHopLength - 1) / _stftHopLength) * _stftHopLength + _stftWindowLength - _waveformCount;
+                int needed = ((_waveformCount - 1) / _stftHopLength) * _stftHopLength + _stftWindowLength - _waveformCount;
                 written = Math.Min(needed, count);
 
                 Array.Copy(waveform, offset, _waveformBuffer, _waveformCount, written);
@@ -87,7 +83,7 @@ namespace YamNetCSharpDemo
             return written;
         }
 
-        public void Consume(int count)
+        public void ConsumeOutput(int count)
         {
             Array.Copy(_outputBuffer, count, _outputBuffer, 0, _outputCount - count);
             _outputCount -= count;

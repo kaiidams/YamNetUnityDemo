@@ -37,7 +37,7 @@ public class YamNetDemo : MonoBehaviour
         if (modelAsset)
         {
             model = ModelLoader.Load(modelAsset);
-            worker = WorkerFactory.CreateWorker(model, WorkerFactory.Device.CPU);
+            worker = WorkerFactory.CreateWorker(model, WorkerFactory.Device.GPU);
         }
 
         this.classMap = new string[521];
@@ -65,12 +65,17 @@ public class YamNetDemo : MonoBehaviour
         print($"pos {pos}");
         if (pos < audioOffset)
         {
-            audioOffset = 0;
+            pos = clip.samples;
         }
         if (pos > audioOffset)
         {
             float[] data = new float[pos - audioOffset];
             this.clip.GetData(data, this.audioOffset);
+            this.audioOffset = pos;
+            if (this.audioOffset >= clip.samples)
+            {
+                this.audioOffset = 0;
+            }
             int offset = 0;
             while (offset < data.Length)
             {
@@ -86,7 +91,7 @@ public class YamNetDemo : MonoBehaviour
                     }
                     finally
                     {
-                        this.featureBuffer.Consume(48 * 64);
+                        this.featureBuffer.ConsumeOutput(48 * 64);
                     }
                 }
             }
