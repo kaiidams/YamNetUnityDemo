@@ -1,0 +1,6 @@
+extern "C" {
+	float Foopluginmethod()
+	{
+
+	}
+}
