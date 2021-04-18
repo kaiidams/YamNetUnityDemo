@@ -415,6 +415,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelAsset: {fileID: 5022602860645237092, guid: 01f8dfac0d1332f4c851503c4fbef8b8, type: 3}
+  text: {fileID: 1972463426}
 --- !u!65 &1676366412
 BoxCollider:
   m_ObjectHideFlags: 0
