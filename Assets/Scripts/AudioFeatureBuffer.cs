@@ -37,6 +37,22 @@ namespace YamNetCSharpDemo
         public int OutputCount { get { return _outputCount; } }
         public float[] OutputBuffer { get { return _outputBuffer; } }
 
+        public float[] Resample(float[] waveform, int fromSampleRate)
+        {
+            int toLen = (int)(waveform.Length * ((double)SamplingRate / fromSampleRate));
+            float stepRate = ((float)fromSampleRate) / SamplingRate;
+            float[] toWaveform = new float[toLen];
+            for (int toIndex = 0; toIndex < toWaveform.Length; toIndex++)
+            {
+                int fromIndex = (int)(toIndex * stepRate);
+                if (fromIndex < waveform.Length)
+                {
+                    toWaveform[toIndex] = waveform[fromIndex];
+                }
+            }
+            return toWaveform;
+        }
+
         public int Write(float[] waveform, int offset, int count)
         {
             int written = 0;

@@ -11,7 +11,7 @@ using YamNetCSharpDemo;
 public class YamNetDemo : MonoBehaviour
 {
     private const int NumClasses = 521;
-    private const int AudioBufferLength = 10;
+    private const int AudioBufferLengthSec = 10;
 
     public NNModel modelAsset;
     public Text text;
@@ -22,18 +22,29 @@ public class YamNetDemo : MonoBehaviour
     private int audioOffset;
     private AudioFeatureBuffer featureBuffer;
     private string[] classMap;
+    private int sampleRate;
 
     // Start is called before the first frame update
     void Start()
     {
+        int minFreq;
+        int maxFreq;
+
         foreach (var device in Microphone.devices)
         {
-            Debug.Log("Name: " + device);
+            Microphone.GetDeviceCaps(device, out minFreq, out maxFreq);
+            Debug.Log($"Name: {device} MinFreq: {minFreq} MaxFreq: {maxFreq}");
         }
 
         string microphoneDeviceName = Microphone.devices[0];
+        Microphone.GetDeviceCaps(microphoneDeviceName, out minFreq, out maxFreq);
+        this.sampleRate = 48000; // AudioFeatureBuffer.SamplingRate;
+        if (minFreq != 0 && maxFreq != 0)
+        {
+            this.sampleRate = Mathf.Clamp(this.sampleRate, minFreq, maxFreq);
+        }
 
-        this.clip = Microphone.Start(microphoneDeviceName, true, AudioBufferLength, AudioFeatureBuffer.SamplingRate);
+        this.clip = Microphone.Start(microphoneDeviceName, true, AudioBufferLengthSec, this.sampleRate);
         this.featureBuffer = new AudioFeatureBuffer();
         this.audioOffset = 0;
 
@@ -79,6 +90,7 @@ public class YamNetDemo : MonoBehaviour
             {
                 this.audioOffset = 0;
             }
+            data = featureBuffer.Resample(data, sampleRate);
             int offset = 0;
             while (offset < data.Length)
             {
