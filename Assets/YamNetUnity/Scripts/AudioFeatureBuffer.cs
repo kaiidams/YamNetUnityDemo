@@ -9,7 +9,7 @@ namespace YamNetUnity
 {
     class AudioFeatureBuffer
     {
-        public const int SamplingRate = 16000;
+        public const int InputSamplingRate = 16000;
 
         private readonly Mfcc _mfcc;
         private readonly int _stftHopLength;
@@ -37,20 +37,27 @@ namespace YamNetUnity
         public int OutputCount { get { return _outputCount; } }
         public float[] OutputBuffer { get { return _outputBuffer; } }
 
-        public float[] Resample(float[] waveform, int fromSampleRate)
+        public float[] Resample(float[] waveform, int sampleRate)
         {
-            int toLen = (int)(waveform.Length * ((double)SamplingRate / fromSampleRate));
-            float stepRate = ((float)fromSampleRate) / SamplingRate;
-            float[] toWaveform = new float[toLen];
-            for (int toIndex = 0; toIndex < toWaveform.Length; toIndex++)
+            if (sampleRate == InputSamplingRate)
             {
-                int fromIndex = (int)(toIndex * stepRate);
-                if (fromIndex < waveform.Length)
-                {
-                    toWaveform[toIndex] = waveform[fromIndex];
-                }
+                return waveform;
             }
-            return toWaveform;
+            else
+            {
+                int toLen = (int)(waveform.Length * ((double)InputSamplingRate / sampleRate));
+                float stepRate = ((float)sampleRate) / InputSamplingRate;
+                float[] toWaveform = new float[toLen];
+                for (int toIndex = 0; toIndex < toWaveform.Length; toIndex++)
+                {
+                    int fromIndex = (int)(toIndex * stepRate);
+                    if (fromIndex < waveform.Length)
+                    {
+                        toWaveform[toIndex] = waveform[fromIndex];
+                    }
+                }
+                return toWaveform;
+            }
         }
 
         public int Write(float[] waveform, int offset, int count)

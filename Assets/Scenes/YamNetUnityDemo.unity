@@ -619,6 +619,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelAsset: {fileID: 5022602860645237092, guid: 01f8dfac0d1332f4c851503c4fbef8b8, type: 3}
+  onResult:
+    m_PersistentCalls:
+      m_Calls: []
+  sampleRate: 0
 --- !u!114 &2141456714
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using Unity.Barracuda;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace YamNetUnity
 {
@@ -16,7 +14,8 @@ namespace YamNetUnity
         private const int AudioBufferLengthSec = 10;
 
         public NNModel modelAsset;
-        public UnityEvent<int, string, float> OnResult { get; private set; }
+        public UnityEvent<int, string, float> onResult;
+        public int sampleRate;
 
         public void StartMicrophone()
         {
@@ -29,16 +28,15 @@ namespace YamNetUnity
                 Debug.Log($"Name: {device} MinFreq: {minFreq} MaxFreq: {maxFreq}");
             }
 
-            string microphoneDeviceName = Microphone.devices[0];
+            this.microphoneDeviceName = Microphone.devices[0];
             Microphone.GetDeviceCaps(microphoneDeviceName, out minFreq, out maxFreq);
-            this.sampleRate = 48000; // AudioFeatureBuffer.SamplingRate;
+            this.sampleRate = AudioFeatureBuffer.InputSamplingRate;
             if (minFreq != 0 && maxFreq != 0)
             {
                 this.sampleRate = Mathf.Clamp(this.sampleRate, minFreq, maxFreq);
             }
 
             this.clip = Microphone.Start(microphoneDeviceName, true, AudioBufferLengthSec, this.sampleRate);
-            this.featureBuffer = new AudioFeatureBuffer();
             this.audioOffset = 0;
         }
 
@@ -73,11 +71,11 @@ namespace YamNetUnity
         private int audioOffset;
         private AudioFeatureBuffer featureBuffer;
         private string[] classMap;
-        private int sampleRate;
 
         private void Awake()
         {
-            this.OnResult = new UnityEvent<int, string, float>();
+            this.microphoneDeviceName = null;
+            this.onResult = new UnityEvent<int, string, float>();
         }
 
         // Start is called before the first frame update
@@ -105,26 +103,31 @@ namespace YamNetUnity
                     }
                 }
             }
+
+            this.featureBuffer = new AudioFeatureBuffer();
         }
 
         // Update is called once per frame
         void Update()
         {
-            int pos = Microphone.GetPosition(microphoneDeviceName);
-            if (pos < audioOffset)
+            if (this.microphoneDeviceName != null)
             {
-                pos = clip.samples;
-            }
-            if (pos > audioOffset)
-            {
-                float[] data = new float[pos - audioOffset];
-                this.clip.GetData(data, this.audioOffset);
-                this.audioOffset = pos;
-                if (this.audioOffset >= clip.samples)
+                int pos = Microphone.GetPosition(microphoneDeviceName);
+                if (pos < audioOffset)
                 {
-                    this.audioOffset = 0;
+                    pos = clip.samples;
                 }
-                this.SendInput(data);
+                if (pos > audioOffset)
+                {
+                    float[] data = new float[pos - audioOffset];
+                    this.clip.GetData(data, this.audioOffset);
+                    this.audioOffset = pos;
+                    if (this.audioOffset >= clip.samples)
+                    {
+                        this.audioOffset = 0;
+                    }
+                    this.SendInput(data);
+                }
             }
         }
 
@@ -163,7 +166,7 @@ namespace YamNetUnity
                         }
                     }
                     string bestClassName = this.classMap[bestClassId];
-                    this.OnResult.Invoke(bestClassId, bestClassName, bestScore);
+                    this.onResult.Invoke(bestClassId, bestClassName, bestScore);
                 }
                 finally
                 {

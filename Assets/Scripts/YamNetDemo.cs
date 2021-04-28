@@ -14,14 +14,13 @@ public class YamNetDemo : MonoBehaviour
     void Start()
     {
         var yamnet = GetComponent<YamNet>();
-        yamnet.OnResult.AddListener(YamNetResultCallback);
+        yamnet.onResult.AddListener(YamNetResultCallback);
         yamnet.StartMicrophone();
     }
 
     // Update is called once per frame
     void Update()
     {
-
     }
 
     private void YamNetResultCallback(int bestClassId, string bestClassName, float bestScore)
