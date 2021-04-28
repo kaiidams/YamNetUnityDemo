@@ -133,8 +133,6 @@ namespace YamNetUnity
 
         private void OnPatchReceived(float[] features)
         {
-            print("Consume");
-
             if (worker != null)
             {
                 Tensor inputTensor = null;
@@ -144,16 +142,13 @@ namespace YamNetUnity
 
                 string inputName = model.inputs[0].name;
                 inputTensor = new Tensor(shape, features);
-                print(inputTensor[0, 34, 23, 0]);
                 inputs.Add(inputName, inputTensor);
                 worker.Execute(inputs);
 
                 try
                 {
                     string outputName = model.outputs[0];
-                    //print(outputName);
                     Tensor output = worker.PeekOutput(outputName);
-                    //print(output.name);
                     float[] predictions = output.AsFloats();
                     int bestClassId = -1;
                     float bestScore = -1000;
