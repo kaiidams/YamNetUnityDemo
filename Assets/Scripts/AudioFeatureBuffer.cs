@@ -9,6 +9,8 @@ namespace YamNetCSharpDemo
 {
     class AudioFeatureBuffer
     {
+        public const int SamplingRate = 16000;
+
         private readonly Mfcc _mfcc;
         private readonly int _stftHopLength;
         private readonly int _stftWindowLength;

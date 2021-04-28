@@ -10,6 +10,9 @@ using YamNetCSharpDemo;
 
 public class YamNetDemo : MonoBehaviour
 {
+    private const int NumClasses = 521;
+    private const int AudioBufferLength = 10;
+
     public NNModel modelAsset;
     public Text text;
     private Model model;
@@ -30,7 +33,7 @@ public class YamNetDemo : MonoBehaviour
 
         string microphoneDeviceName = Microphone.devices[0];
 
-        this.clip = Microphone.Start(microphoneDeviceName, true, 10, 16000);
+        this.clip = Microphone.Start(microphoneDeviceName, true, AudioBufferLength, AudioFeatureBuffer.SamplingRate);
         this.featureBuffer = new AudioFeatureBuffer();
         this.audioOffset = 0;
 
@@ -40,7 +43,7 @@ public class YamNetDemo : MonoBehaviour
             worker = WorkerFactory.CreateWorker(model, WorkerFactory.Device.GPU);
         }
 
-        this.classMap = new string[521];
+        this.classMap = new string[NumClasses];
 
         TextAsset classMapData = (TextAsset)Resources.Load("yamnet_class_map", typeof(TextAsset));
         using (var reader = new StringReader(classMapData.text))
@@ -122,14 +125,6 @@ public class YamNetDemo : MonoBehaviour
                 Tensor output = worker.PeekOutput(outputName);
                 //print(output.name);
                 float[] predictions = output.AsFloats();
-#if false
-                print(string.Format("Shape {0} {1} {2} {3} {4}",
-                    output.dimensions,
-                    output.shape[0], output.shape[1], output.shape[2], output.shape[3]));
-                print(string.Format("Shape {0} {1} {2} {3}",
-                    output.batch, output.height, output.width, output.channels));
-                print(predictions.Length);
-#endif
                 int mi = -1;
                 float mv = -1000;
                 for (int i = 0; i < predictions.Length; i++)
