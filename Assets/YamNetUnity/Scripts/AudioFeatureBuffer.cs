@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YamNetCSharpDemo
+namespace YamNetUnity
 {
     class AudioFeatureBuffer
     {

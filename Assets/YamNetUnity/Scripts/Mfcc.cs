@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace YamNetCSharpDemo
+namespace YamNetUnity
 {
     class Mfcc
     {
