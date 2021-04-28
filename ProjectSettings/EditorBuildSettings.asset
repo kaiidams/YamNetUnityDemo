@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/YamNetUnityDemo.unity
+    guid: 95f8d1c19fbf75e4d9bb05610ac8c803
   m_configObjects: {}
