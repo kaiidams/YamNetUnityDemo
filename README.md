@@ -9,3 +9,5 @@ corpus it was trained on. It employs the Mobilenet_v1 depthwise-separable convol
 The original YAMNet is composed of MFCC transform and Mobilenet_v1. Because Barracuda doesn't
 support MFCC transform. The included ONNX file only contains Moblenet_v1 and MFCC is
 implemented by C#.
+
+![Android Screenshot](screenshot_android.png)
