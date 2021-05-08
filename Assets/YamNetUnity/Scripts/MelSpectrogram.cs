@@ -39,15 +39,15 @@ namespace YamNetUnity
             return window;
         }
 
-        public void Transform(float[] waveform, int waveformOffset, float[] mfcc, int mfccOffset)
+        public void Transform(float[] waveform, int waveformOffset, float[] melspec, int melspecOffset)
         {
             GetFrame(waveform, waveformOffset, temp1);
             CFFT(temp1, temp2, _fftLength);
             ToMagnitude(temp2, temp1, _fftLength);
-            ToMelSpec(temp2, mfcc, mfccOffset);
+            ToMelSpec(temp2, melspec, melspecOffset);
         }
 
-        private void ToMelSpec(double[] spec, float[] mfcc, int mfccOffset)
+        private void ToMelSpec(double[] spec, float[] melspec, int melspecOffset)
         {
             for (int i = 0; i < _nMelBands; i++)
             {
@@ -74,7 +74,7 @@ namespace YamNetUnity
                     v += spec[j] * r;
                     j++;
                 }
-                mfcc[mfccOffset + i] = (float)Math.Log(v + _logOffset);
+                melspec[melspecOffset + i] = (float)Math.Log(v + _logOffset);
             }
         }
 
