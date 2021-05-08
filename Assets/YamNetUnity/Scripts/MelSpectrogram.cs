@@ -2,7 +2,7 @@
 
 namespace YamNetUnity
 {
-    class Mfcc
+    class MelSpectrogram
     {
         private double[] window;
         private double[] melBands;
@@ -13,7 +13,7 @@ namespace YamNetUnity
         private double _sampleRate;
         private double _logOffset;
 
-        public Mfcc(
+        public MelSpectrogram(
             int sampleRate = 16000,
             int stftWindowLength = 400, int stftLength = 512,
             int nMelBands = 64, double melMinHz = 125.0, double melMaxHz = 7500.0,

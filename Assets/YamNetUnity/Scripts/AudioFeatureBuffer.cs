@@ -11,7 +11,7 @@ namespace YamNetUnity
     {
         public const int InputSamplingRate = 16000;
 
-        private readonly Mfcc _mfcc;
+        private readonly MelSpectrogram _mfcc;
         private readonly int _stftHopLength;
         private readonly int _stftWindowLength;
         private readonly int _nMelBands;
@@ -23,7 +23,7 @@ namespace YamNetUnity
 
         public AudioFeatureBuffer(int stftHopLength = 160, int stftWindowLength = 400, int nMelBands = 64)
         {
-            _mfcc = new Mfcc();
+            _mfcc = new MelSpectrogram();
             _stftHopLength = stftHopLength;
             _stftWindowLength = stftWindowLength;
             _nMelBands = nMelBands;
